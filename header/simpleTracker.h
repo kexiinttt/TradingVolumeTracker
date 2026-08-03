@@ -1,3 +1,5 @@
+#pragma once
+
 #include "trade.h"
 #include <deque>
 #include <unordered_map>
