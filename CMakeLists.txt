@@ -10,6 +10,7 @@ add_executable(simple_tracker_tests
     main.cpp
     src/simpleTracker.cpp
     src/anyQueryTracker.cpp
+    src/outOfOrderTracker.cpp
 )
 
 target_include_directories(simple_tracker_tests PRIVATE

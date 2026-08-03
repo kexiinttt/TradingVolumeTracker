@@ -1,5 +1,6 @@
 #include "header/simpleTracker.h"
 #include "header/anyQueryTracker.h"
+#include "header/outOfOrderTracker.h"
 
 #include <cassert>
 #include <iostream>
@@ -59,8 +60,39 @@ void AnyQueryTrackerTest() {
     std::cout << "All AnyQueryTracker tests passed.\n";
 }
 
+void OutOfOrderTrackerTest() {
+    OutOfOrderTracker tracker(5, 10);
+
+    // Trades remain buffered until they are behind the watermark.
+    tracker.addTrade({100, "AAPL", 100});
+    assert(tracker.getVolume("AAPL") == 0);
+
+    tracker.addTrade({103, "AAPL", 50});
+    assert(tracker.getVolume("AAPL") == 0);
+
+    // maxSeenTimestamp = 106, watermark = 101: timestamp 100 is confirmed.
+    tracker.addTrade({106, "AAPL", 25});
+    assert(tracker.getVolume("AAPL") == 100);
+
+    // maxSeenTimestamp = 108, watermark = 103: timestamp 103 is confirmed.
+    tracker.addTrade({108, "AAPL", 10});
+    assert(tracker.getVolume("AAPL") == 150);
+
+    // A trade at or before the watermark is too late and is ignored.
+    tracker.addTrade({100, "AAPL", 999});
+    assert(tracker.getVolume("AAPL") == 150);
+
+    // Advancing the watermark confirms newer trades and expires old ones.
+    tracker.addTrade({120, "AAPL", 5});
+    assert(tracker.getVolume("AAPL") == 35);
+    assert(tracker.getVolume("UNKNOWN") == 0);
+
+    std::cout << "All OutOfOrderTracker tests passed.\n";
+}
+
 int main() {
     SimpleTrackerTest();
     AnyQueryTrackerTest();
+    OutOfOrderTrackerTest();
     return 0;
 }
