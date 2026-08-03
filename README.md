@@ -1,8 +1,10 @@
-# SimpleTracker
+# Trading Volume Tracker
 
-`SimpleTracker` tracks trading volume for each symbol over a rolling time window.
+## 1. Simple Tracker
 
-## Interface
+`SimpleTracker` tracks trading volume for each symbol over a rolling time window. This is the simple implementation based on the interviewer-provided skeleton.
+
+### Interface
 
 The skeleton exposes two operations:
 
@@ -20,17 +22,18 @@ The constructor takes the window size:
 SimpleTracker tracker(windowSize);
 ```
 
-For a window size of `10` and a query time of `100`, only trades with timestamps strictly greater than `90` are included. A trade at timestamp `90` is expired.
-
-## Assumptions
-
-This implementation is intentionally simple and makes the following assumptions:
-
-- Trades are added in non-decreasing timestamp order for each symbol.
-- Queries move forward in time. `getVolume` removes expired trades, so querying an earlier time after a later query cannot restore trades that were removed.
-- `windowSize` is expected to be fixed.
+### Assumptions
+* Trades are currently expected to be added in non-decreasing timestamp order for each symbol.
+* Queries are currently expected to move forward in time.
+* The tracker is intended for a fixed window size after construction.
 
 
+## 2. Querying Any Timestamp and Any Window Size
+
+The next version should allow `getVolume` to be called for any timestamp with any window size, regardless of the order in which queries are made.
+
+### Assumptions
+* Trades are currently expected to be added in non-decreasing timestamp order for each symbol.
 
 ## Build and run
 
@@ -49,4 +52,5 @@ c++ -std=c++17 main.cpp src/simpleTracker.cpp -o simple_tracker_tests
 ./simple_tracker_tests
 ```
 
-`main.cpp` contains basic tests for multiple symbols, rolling-window expiry, unknown symbols, and the cutoff boundary.
+`main.cpp` contains tests for multiple symbols, rolling-window expiry, unknown
+symbols, and cutoff boundaries.
